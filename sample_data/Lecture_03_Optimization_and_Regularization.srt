@@ -1,0 +1,19 @@
+1
+00:00:05,000 --> 00:00:32,000
+Welcome back everyone. Today we are diving into advanced optimization algorithms, specifically focusing on the Adam optimizer and why it dominates modern deep learning training.
+
+2
+00:00:33,000 --> 00:01:05,000
+Standard Stochastic Gradient Descent (SGD) uses a single uniform learning rate across all parameters. In contrast, Adam stands for Adaptive Moment Estimation. It maintains two running tracking vectors for each individual parameter weight.
+
+3
+00:01:06,000 --> 00:01:45,000
+The first moment is the exponential moving average of past gradients, which acts like momentum. The second moment is the exponential moving average of squared past gradients, which scales the learning rate inversely by the variance of the gradient.
+
+4
+00:01:46,000 --> 00:02:25,000
+Now let us talk about regularization. Overfitting occurs when our model memorizes training noise rather than generalizable patterns. The most common defense in deep networks is Dropout. During training, Dropout randomly zeros out a fraction of neuron activations, forcing the remaining network to learn redundant and robust representations.
+
+5
+00:02:26,000 --> 00:02:58,000
+Remember that during inference or testing, Dropout is turned off and the weights are scaled appropriately. Batch Normalization also provides an inherent regularizing effect by normalizing activations across the mini-batch dimension.

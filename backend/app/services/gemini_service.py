@@ -36,6 +36,28 @@ class GeminiService:
     def is_configured(self) -> bool:
         return bool(self.client and self.api_key)
 
+    def _call_gemini(self, prompt: str, config: Any) -> Tuple[str, str]:
+        """Tries the configured model first, falling back to other supported models if needed."""
+        models_to_try = [self.model_name]
+        for fallback in ["gemini-3.1-flash-lite", "gemini-3.5-flash", "gemini-3.8-flash"]:
+            if fallback not in models_to_try:
+                models_to_try.append(fallback)
+
+        last_error = None
+        for m in models_to_try:
+            try:
+                response = self.client.models.generate_content(
+                    model=m,
+                    contents=prompt,
+                    config=config,
+                )
+                if response and response.text:
+                    return response.text, m
+            except Exception as e:
+                last_error = e
+                continue
+        raise last_error or RuntimeError("All Gemini model attempts failed")
+
     def answer_question(
         self,
         question: str,
@@ -82,7 +104,6 @@ class GeminiService:
         context_str = "\n---\n".join(context_blocks)
 
         if not self.is_configured():
-            # Honest notification according to hackathon instructions
             answer = (
                 "### ℹ️ Gemini API Configuration Required\n\n"
                 "The retrieval pipeline successfully analyzed your study materials and identified "
@@ -123,17 +144,12 @@ SOURCE EXCERPTS:
                 temperature=0.2,
                 top_p=0.9,
             )
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=config,
-            )
-            answer_text = response.text or ""
+            answer_text, used_model = self._call_gemini(prompt, config)
             
             # Check if Gemini stated insufficient information
             insufficient = "not provide sufficient information" in answer_text.lower() or "insufficient information" in answer_text.lower()
 
-            return answer_text, citations, not insufficient, self.model_name
+            return answer_text, citations, not insufficient, used_model
 
         except Exception as e:
             fallback_answer = (
@@ -206,12 +222,7 @@ SOURCE TEXT:
                 temperature=0.3,
                 response_mime_type="application/json",
             )
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=config,
-            )
-            raw_json = response.text or "[]"
+            raw_json, _ = self._call_gemini(prompt, config)
             # Parse json
             data = json.loads(raw_json)
             questions: List[QuizQuestion] = []

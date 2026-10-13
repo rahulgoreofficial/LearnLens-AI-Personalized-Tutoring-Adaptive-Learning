@@ -2,6 +2,8 @@
 
 **Multimodal AI Hackathon 2026 — Track D: Personalized Tutoring & Adaptive Learning**
 
+> 📄 **Official PDF Guide:** [Download / View the Detailed Step-by-Step PDF Guide](./LearnLens_AI_Detailed_Guide.pdf) containing architectural breakdown, complete setup commands, formula derivation, and a 5-stage demonstration script for judges.
+
 LearnLens AI is an end-to-end multimodal study companion that unifies lecture videos, textbooks, slide decks, and transcripts into a source-cited knowledge base. It uses retrieval-grounded AI to run adaptive assessments, transparent mastery tracking, and interactive personalized tutoring with verifiable provenance.
 
 ---
